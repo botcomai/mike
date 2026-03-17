@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AFA PORTAL</title>
+
+<link rel="stylesheet" href="css/menu.css">
+<link rel="stylesheet" href="css/afa.css">
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<!-- Supabase Database Connection --><script src="js/supabase.js"></script>
+<script src="js/security.js"></script>
+
+</head>
+
+<body>
+
+<button class="menu-btn" onclick="openMenu()">☰</button>
+
+<div id="menu-container"></div>
+
+<div class="container">
+
+<div class="afa-logo-container">
+<img src="images/afalogo.png.jpeg" alt="AFA Logo" class="afa-logo">
+</div>
+
+<h2>AFA Portal</h2>
+<p class="subtitle">Select a registration tier below. <span style="display:inline-block; margin-left:6px; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700; background:rgba(42,125,225,0.1); color:#2a7de1;">Wallet: <span id="afaWalletDisplay">₵0.00</span></span></p>
+
+<div class="afa-options">
+
+  <button class="afa-card premium" onclick="window.location.href='afa-premium.html'">
+    <div class="afa-card-icon">⭐</div>
+    <div class="afa-card-info">
+      <h4>Premium Registration</h4>
+      <span class="afa-price premium-price-label">₵30.00</span>
+      <p>Instant approval. No picture upload required.</p>
+    </div>
+  </button>
+
+  <button class="afa-card normal" onclick="window.location.href='afa-normal.html'">
+    <div class="afa-card-icon">📄</div>
+    <div class="afa-card-info">
+      <h4>Normal Registration</h4>
+      <span class="afa-price normal-price-label">₵25.00</span>
+      <p>Requires front & back ID picture upload. Pending verification.</p>
+    </div>
+  </button>
+
+</div>
+
+</div>
+
+<script src="js/menu.js"></script>
+
+<script>
+// Lightweight script to just fetch pricing & wallet for this routing page
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    const { data: wData } = await supabase.from('users').select('wallet_balance, role').eq('id', user.id).single();
+    if(wData) {
+        document.getElementById('afaWalletDisplay').textContent = `₵${parseFloat(wData.wallet_balance || 0).toFixed(2)}`;
+        
+        const { data: prices } = await supabase.from('pricing').select('product, price').eq('role', wData.role || 'client').in('product', ['afa_premium', 'afa_normal']);
+        if(prices) {
+            prices.forEach(p => {
+                if (p.product === 'afa_premium') document.querySelector('.premium-price-label').textContent = `₵${parseFloat(p.price).toFixed(2)}`;
+                if (p.product === 'afa_normal') document.querySelector('.normal-price-label').textContent = `₵${parseFloat(p.price).toFixed(2)}`;
+            });
+        }
+    }
+  } catch (e) {
+    console.error('AFA index error:', e);
+  }
+});
+</script>
+
+</body>
+</html>
+
+
+
+</body>
+</html>
+
+

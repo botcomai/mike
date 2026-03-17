@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Dashboard | Data4Ghana</title>
+    
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/menu.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/security.js"></script>
+</head>
+<body>
+
+    <div id="menu-container"></div>
+
+    <div class="main-wrapper">
+        <!-- Notification Slider -->
+        <div id="notificationSlider" class="notification-slider" style="display:none;">
+            <div id="notificationTrack" class="notification-track">
+                <!-- Slides injected here -->
+            </div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+
+        <!-- Hero Command Center -->
+        <div class="premium-hero">
+            <div class="hero-content">
+                <div class="user-welcome">
+                    <h1 id="welcomeMessage">Hello, User!</h1>
+                    <p class="subtitle">Your digital gateway to seamless connectivity.</p>
+                </div>
+                
+                <div class="balance-card-glass">
+                    <div class="label">Total Wallet Balance</div>
+                    <div class="amount-group">
+                        <span class="currency">₵</span>
+                        <span id="walletBalance">0.00</span>
+                    </div>
+                    <div class="action-row">
+                        <button onclick="window.location.href='wallet.html'" class="btn-topup">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                            Add Funds
+                        </button>
+                        <button onclick="openMenu()" class="btn-services">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>
+                            Services
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Identity Banner -->
+            <div class="identity-badge">
+                <div class="role-pill" id="bannerRole">LOADING...</div>
+                <div class="merchant-code">Code: <span id="dashboardMerchantId">D4G-...</span></div>
+            </div>
+        </div>
+
+        <!-- Agent Storefront Management -->
+        <div class="store-mgmt-card animate-in" id="storefrontModule" style="display:none;">
+            <div class="sm-header">
+                <div class="sm-title">
+                    <div class="sm-icon">🏪</div>
+                    <div>
+                        <h3>My Public Storefront</h3>
+                        <p>Share your link to sell data directly to customers.</p>
+                    </div>
+                </div>
+                <div class="toggle-container">
+                    <span class="toggle-label">Store Active</span>
+                    <label class="switch">
+                        <input type="checkbox" id="storeActiveToggle" onchange="toggleStoreStatus()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="sm-body">
+                <div class="sm-input-group">
+                    <div class="sm-field">
+                        <label>Store Name</label>
+                        <input type="text" id="storeNameInput" placeholder="e.g. Kojo's Data Hub">
+                    </div>
+                    <div class="sm-field">
+                        <label>Store Slug (URL ID)</label>
+                        <div class="slug-input-wrapper">
+                            <span class="slug-prefix">data4ghana.com/store?ref=</span>
+                            <input type="text" id="storeSlugInput" placeholder="kojo-hub">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sm-input-group">
+                    <div class="sm-field">
+                        <label>WhatsApp Number</label>
+                        <input type="tel" id="storeWhatsappInput" placeholder="e.g. 233541234567">
+                    </div>
+                    <div class="sm-field">
+                        <label>WhatsApp Community Link</label>
+                        <input type="url" id="storeCommunityInput" placeholder="https://chat.whatsapp.com/...">
+                    </div>
+                </div>
+
+                <div class="sm-field" style="margin-bottom: 24px;">
+                    <label>Store Description</label>
+                    <textarea id="storeDescriptionInput" placeholder="Tell your customers about your store..." rows="3" style="width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 14px; font-weight: 600; font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
+                </div>
+
+                <div class="sm-btn-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+                    <button class="sm-save-btn" onclick="saveStoreSettings()" style="width: 100%;">
+                        Save Store Settings
+                    </button>
+                    <button class="sm-secondary-btn" onclick="window.location.href='store-orders.html'" style="padding: 12px; border-radius: 12px; background: #f8fafc; border: 1.5px solid #e2e8f0; font-weight: 700; cursor: pointer; color: #475569;">
+                        View Store Orders
+                    </button>
+                </div>
+
+                <div class="sm-pricing-container" id="storePricingSection" style="border-top: 1px solid #f1f5f9; padding-top: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h4 style="margin: 0; font-size: 16px;">Products & Custom Pricing</h4>
+                            <p style="margin: 4px 0 0; font-size: 12px; color: #64748b;">Set your retail prices and track profit margins.</p>
+                        </div>
+                        <button class="sm-save-btn" onclick="saveAllPrices()" style="padding: 8px 16px; font-size: 12px; width: auto;">
+                            Save All Prices
+                        </button>
+                    </div>
+
+                    <div class="table-container" style="box-shadow: none; padding: 0;">
+                        <table class="pricing-table" style="font-size: 13px;">
+                            <thead>
+                                <tr style="background: #f8fafc;">
+                                    <th style="padding: 12px;">Product</th>
+                                    <th style="padding: 12px;">Cost (₵)</th>
+                                    <th style="padding: 12px;">Retail (₵)</th>
+                                    <th style="padding: 12px;">Profit (₵)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="storePricingTable">
+                                <!-- Injected by store-pricing.js -->
+                                <tr><td colspan="4" style="text-align:center; padding: 20px; color: #94a3b8;">Loading products...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="sm-link-preview" id="storeLinkPreview" style="display:none;">
+                    <div class="lp-content">
+                        <span class="lp-label">Your Live Store Link:</span>
+                        <code id="publicStoreUrl">https://data4ghana.com/store.html?ref=...</code>
+                    </div>
+                    <button class="lp-copy-btn" onclick="copyStoreLink()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-grid">
+            <!-- Stats Dashboard -->
+            <div class="stats-section">
+                <div class="section-header">
+                    <h3>Insights Today</h3>
+                </div>
+                <div class="stat-pill-grid">
+                    <div class="stat-pill">
+                        <div class="icon" style="color:#2563eb; background:rgba(37,99,235,0.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                        <div class="info">
+                            <p>Orders</p>
+                            <h4 id="ordersToday">0</h4>
+                        </div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="icon" style="color:#059669; background:rgba(5,150,105,0.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                        <div class="info">
+                            <p>GB SIZE</p>
+                            <h4 id="amountToday">₵0.00</h4>
+                        </div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="icon" style="color:#d97706; background:rgba(217,119,6,0.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                        <div class="info">
+                            <p>Data Sold</p>
+                            <h4 id="bundleToday">0GB</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-section">
+                <div class="section-header">
+                    <h3>Recent History</h3>
+                    <a href="transactions.html">Show All</a>
+                </div>
+                <div id="recentTransactionsList" class="tx-list">
+                    <div class="tx-skeleton"></div>
+                    <div class="tx-skeleton"></div>
+                    <div class="tx-skeleton"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth-guard.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/store-pricing.js"></script>
+    <script src="js/store-mgmt.js"></script>
+</body>
+</html>

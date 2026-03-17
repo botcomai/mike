@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storefront Sales | Enterprise Dashboard</title>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/orders.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/supabase.js"></script>
+    <style>
+        :root {
+            --emerald-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+
+        /* HERO REFINEMENT */
+        .store-hero {
+            background: var(--emerald-gradient);
+            padding: 80px 40px 120px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-hero::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            margin: 0 0 12px;
+            letter-spacing: -1px;
+        }
+
+        .hero-title p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* GLASS STATS */
+        .glass-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 24px 32px;
+            border-radius: 24px;
+            min-width: 180px;
+            transition: transform 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .glass-card .label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .glass-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* MAIN SECTION */
+        .store-container {
+            max-width: 1200px;
+            margin: -60px auto 60px;
+            padding: 0 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .order-mgmt-card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: var(--shadow-premium);
+            padding: 32px;
+            border: 1px solid #f1f5f9;
+        }
+
+        /* SEARCH & FILTERS */
+        .filter-header {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            align-items: center;
+        }
+
+        .search-input-group {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input-group svg {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-input-group input {
+            width: 100%;
+            padding: 16px 16px 16px 52px;
+            background: #f1f5f9;
+            border: 1.5px solid transparent;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .search-input-group input:focus {
+            background: white;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+            outline: none;
+        }
+
+        .filter-select {
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border: 1.5px solid transparent;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            min-width: 160px;
+        }
+
+        .date-input {
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border: 1.5px solid transparent;
+            border-radius: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* TABLE REFINEMENT */
+        .orders-table th {
+            background: transparent;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f8fafc;
+        }
+
+        .orders-table td {
+            padding: 24px 20px;
+            vertical-align: middle;
+        }
+
+        .orders-table tr:hover {
+            background: #fcfdfe;
+        }
+
+        .customer-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cust-avatar {
+            width: 36px;
+            height: 36px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .cust-phone {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .bundle-badge {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            border: 1px solid #dcfce7;
+        }
+
+        .profit-label {
+            display: block;
+            font-size: 11px;
+            color: #10b981;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .hero-inner { flex-direction: column; text-align: center; gap: 32px; }
+            .store-container { padding: 0 20px; }
+            .filter-header { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div id="menu-container"></div>
+
+        <main class="main-content">
+            <!-- Professional Hero -->
+            <section class="store-hero">
+                <div class="hero-inner">
+                    <div class="hero-title">
+                        <h1>Storefront Sales</h1>
+                        <p>Analyze and manage orders from your public e-commerce store.</p>
+                    </div>
+                    
+                    <div class="glass-stats">
+                        <div class="glass-card">
+                            <span class="label">Total Revenue</span>
+                            <div class="value" id="storeRevenue">₵0.00</div>
+                        </div>
+                        <div class="glass-card">
+                            <span class="label">Total Orders</span>
+                            <div class="value" id="storeOrderCount">0</div>
+                        </div>
+                        <div class="glass-card">
+                            <span class="label">Est. Profit</span>
+                            <div class="value" id="storeProfit">₵0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="store-container">
+                <div class="order-mgmt-card">
+                    <!-- Modern Filters -->
+                    <div class="filter-header">
+                        <div class="search-input-group">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input type="tel" id="phoneFilter" placeholder="Search by customer phone number..." oninput="applyFilters()">
+                        </div>
+                        
+                        <input type="date" id="dateFilter" class="date-input" onchange="applyFilters()">
+                        
+                        <select id="statusFilter" class="filter-select" onchange="applyFilters()">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+
+                    <!-- E-commerce Table -->
+                    <div class="table-container">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Info</th>
+                                    <th>Status</th>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Order Total</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="storeOrdersTable">
+                                <!-- JS Injection -->
+                                <tr><td colspan="6" style="text-align:center; padding: 60px;">
+                                    <div class="tx-skeleton" style="margin: 0 auto;"></div>
+                                    <p style="color:var(--text-muted); margin-top:20px;">Fetching your storefront transactions...</p>
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/menu.js"></script>
+    <script src="js/store-orders.js"></script>
+</body>
+</html>

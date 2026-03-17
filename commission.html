@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commission Dashboard | Data4Ghana</title>
+    
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --primary: #0f172a;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.3);
+            --background: #f8fafc;
+        }
+
+        body {
+            background: var(--background);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--primary);
+        }
+
+        .main-content {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .commission-hero {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 60px 40px;
+            border-radius: 32px;
+            color: white;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .commission-hero::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 86c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm66-3c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-46-45c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm26 26c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-1-48c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-54 46c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zM45 43c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-28 3c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm8-26c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm33 47c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-41 10c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm39 7c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-72 34c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm20-11c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm58 10c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-6-18c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-23 19c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-7 1c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-7 3c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z' fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .hero-stats {
+            z-index: 1;
+        }
+
+        .balance-label {
+            font-size: 16px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 64px;
+            font-weight: 800;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .balance-amount .currency {
+            font-size: 28px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .withdraw-button-hero {
+            z-index: 1;
+            background: white;
+            color: var(--primary);
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .withdraw-button-hero:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            background: #f8fafc;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+        }
+
+        /* Network Tabs */
+        .network-tabs {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .net-tab {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            color: #64748b;
+            background: transparent;
+        }
+
+        .net-tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .rates-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .rate-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        .rate-item:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .rate-info .gb {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .rate-info .network-name {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .rate-value {
+            font-weight: 800;
+            color: var(--success);
+            font-size: 16px;
+        }
+
+        /* Form Styling */
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-size: 16px;
+            color: var(--primary);
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--accent);
+            background: white;
+            outline: none;
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .withdraw-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 16px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .withdraw-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.5);
+        }
+
+        .withdraw-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* History Table */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            background: #f8fafc;
+            text-transform: uppercase;
+        }
+
+        .history-table td {
+            padding: 20px;
+            font-size: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .type-pill {
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .type-earned { background: #d1fae5; color: #065f46; }
+        .type-withdrawn { background: #fee2e2; color: #991b1b; }
+
+        .performance-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .stat-item {
+            padding: 24px;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            border-color: var(--accent);
+            transform: scale(1.02);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 16px;
+            }
+
+            .commission-hero {
+                flex-direction: column;
+                padding: 40px 24px;
+                text-align: center;
+                gap: 24px;
+                border-radius: 24px;
+            }
+
+            .balance-amount {
+                justify-content: center;
+                font-size: 48px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .rates-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .rates-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .rates-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .rates-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/supabase.js"></script>
+</head>
+<body>
+
+    <div id="menu-container"></div>
+
+    <div class="main-content">
+        <!-- Hero Section -->
+        <div class="commission-hero">
+            <div class="hero-stats">
+                <p class="balance-label">Commission Balance</p>
+                <div class="balance-amount">
+                    <span class="currency">GH₵</span>
+                    <span id="commBalance">0.00</span>
+                </div>
+            </div>
+            <a href="#withdraw-section" class="withdraw-button-hero">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Withdraw Now
+            </a>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Side: Rates and History -->
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                <!-- Commission Rates Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                            Commission Rates
+                        </div>
+                    </div>
+                    
+                    <div class="network-tabs">
+                        <button class="net-tab active" onclick="filterRates('MTN')">MTN</button>
+                        <button class="net-tab" onclick="filterRates('TELECEL')">Telecel</button>
+                        <button class="net-tab" onclick="filterRates('AIRTELTIGO')">AirtelTigo</button>
+                    </div>
+
+                    <div class="rates-container" id="ratesDisplay">
+                        <div style="text-align:center; padding:40px; color:#94a3b8;">Loading rates...</div>
+                    </div>
+                </div>
+
+                <!-- Transaction History Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                            Recent Transactions
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody">
+                                <tr><td colspan="4" style="text-align:center; padding:40px; color:#94a3b8;">Loading transactions...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Withdrawal and Stats -->
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                <!-- Withdrawal Form Card -->
+                <div class="card" id="withdraw-section">
+                    <div class="card-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                        Quick Withdrawal
+                    </div>
+                    <p style="font-size: 14px; color: #64748b; margin: 12px 0 24px;">Min withdrawal: <strong>GH₵50.00</strong>. Instant wallet refund available.</p>
+                    
+                    <form id="withdrawalForm">
+                        <div class="input-group">
+                            <label>Withdrawal Method</label>
+                            <select id="withdrawMethod" required>
+                                <option value="wallet">Refund to Wallet (Instant)</option>
+                                <option value="momo">Mobile Money (24h Processing)</option>
+                            </select>
+                        </div>
+
+                        <div id="momoFields" style="display:none;">
+                            <div class="input-group">
+                                <label>MOMO Number</label>
+                                <input type="tel" id="momoNumber" placeholder="02XXXXXXXX">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Amount (GH₵)</label>
+                            <input type="number" id="withdrawAmount" min="50" step="0.01" placeholder="Minimum 50.00" required>
+                        </div>
+
+                        <button type="submit" class="withdraw-btn" id="withdrawBtn">
+                            Confirm Withdrawal
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                        Performance Overview
+                    </div>
+                    <div class="performance-card" style="margin-top: 24px;">
+                        <div class="stat-item">
+                            <p class="stat-label">Total Earned</p>
+                            <h4 class="stat-value" id="totalEarned" style="color: var(--success);">₵0.00</h4>
+                        </div>
+                        <div class="stat-item">
+                            <p class="stat-label">Total Withdrawn</p>
+                            <h4 class="stat-value" id="totalWithdrawn">₵0.00</h4>
+                        </div>
+                        <div class="stat-item" style="background: var(--accent-glow); border-color: var(--accent);">
+                            <p class="stat-label" style="color: var(--accent);">Pending MOMO</p>
+                            <h4 class="stat-value" id="pendingWithdrawals" style="color: var(--accent);">₵0.00</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/commission.js"></script>
+    <script>
+        // Menu Loader
+        fetch('components/menu.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('menu-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar .nav-links a');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'commission.html') {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+        // Toggle Momo Fields
+        document.getElementById('withdrawMethod').addEventListener('change', function() {
+            document.getElementById('momoFields').style.display = this.value === 'momo' ? 'block' : 'none';
+        });
+
+        // Simple Tab Switcher
+        function filterRates(network) {
+            document.querySelectorAll('.net-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.toUpperCase() === network);
+            });
+            if(window.renderRates) window.renderRates(network);
+        }
+    </script>
+</body>
+</html>
+</body>
+</html>
